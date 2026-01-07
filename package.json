@@ -9,7 +9,8 @@
     "dev:web": "mise run dev:web",
     "dev:worker": "mise run dev:worker",
     "lint": "biome check .",
-    "format": "biome check --write ."
+    "format": "biome check --write .",
+    "i18n:build": "pnpm --filter @workspace/i18n build"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.11",

@@ -1,0 +1,14 @@
+{
+  "name": "@workspace/i18n",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node --import=tsx tooling/build.ts",
+    "build:web": "node --import=tsx tooling/build.ts --target=web",
+    "build:mobile": "node --import=tsx tooling/build.ts --target=mobile"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0"
+  }
+}
