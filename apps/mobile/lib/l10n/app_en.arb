@@ -1,0 +1,10 @@
+{
+  "@@locale": "en",
+  "appTitle": "Fullstack Starter",
+  "@appTitle": {
+    "description": "The app title"
+  },
+  "loading": "Loading...",
+  "error": "An error occurred",
+  "retry": "Retry"
+}

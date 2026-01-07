@@ -1,0 +1,11 @@
+{
+  "title": "Fullstack Starter",
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete"
+  }
+}

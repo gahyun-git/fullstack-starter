@@ -1,0 +1,19 @@
+{
+  "name": "@fullstack-starter/infra",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Terraform infrastructure with Infisical secret management",
+  "scripts": {
+    "init": "terraform init",
+    "validate": "terraform validate",
+    "fmt": "terraform fmt -recursive",
+    "fmt:check": "terraform fmt -check -recursive",
+    "plan": "infisical run --env=dev --path=/infra -- terraform plan -var-file=terraform.tfvars",
+    "apply": "infisical run --env=dev --path=/infra -- terraform apply -var-file=terraform.tfvars",
+    "destroy": "infisical run --env=dev --path=/infra -- terraform destroy -var-file=terraform.tfvars",
+    "output": "terraform output",
+    "state:list": "terraform state list",
+    "plan:prod": "infisical run --env=prod --path=/infra -- terraform plan -var-file=terraform.prod.tfvars",
+    "apply:prod": "infisical run --env=prod --path=/infra -- terraform apply -var-file=terraform.prod.tfvars"
+  }
+}
