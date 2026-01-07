@@ -1,0 +1,5 @@
+[tasks]
+dev = { run = "uv run poe dev", description = "Start Worker" }
+lint = { run = "uv run poe lint", description = "Lint Worker" }
+format = { run = "uv run poe format", description = "Format Worker" }
+test = { run = "uv run poe test", description = "Test Worker" }

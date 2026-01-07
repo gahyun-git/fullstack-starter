@@ -1,0 +1,4 @@
+[tasks]
+build = { run = "node --import=tsx tooling/build.ts", description = "Build i18n files for web and mobile" }
+"build:web" = { run = "node --import=tsx tooling/build.ts --target=web", description = "Build i18n for web only" }
+"build:mobile" = { run = "node --import=tsx tooling/build.ts --target=mobile", description = "Build i18n for mobile only" }

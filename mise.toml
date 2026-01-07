@@ -1,3 +1,8 @@
+experimental_monorepo_root = true
+
+[settings]
+experimental = true
+
 [tools]
 node = "24"
 python = "3.13"
@@ -7,41 +12,13 @@ flutter = "3"
 terraform = "1"
 "github:Infisical/cli" = "latest"
 
-[settings]
-experimental = true
-
 [tasks]
-dev = { depends = ["dev:api", "dev:web", "dev:worker"], description = "Start all services" }
-"dev:api" = { dir = "apps/api", run = "uv run poe dev", description = "Start API server" }
-"dev:web" = { dir = "apps/web", run = "pnpm dev", description = "Start Web server" }
-"dev:worker" = { dir = "apps/worker", run = "uv run poe dev", description = "Start Worker" }
-
-lint = { depends = ["lint:api", "lint:web", "lint:worker"], description = "Lint all apps" }
-"lint:api" = { dir = "apps/api", run = "uv run poe lint", description = "Lint API" }
-"lint:web" = { dir = "apps/web", run = "pnpm lint", description = "Lint Web" }
-"lint:worker" = { dir = "apps/worker", run = "uv run poe lint", description = "Lint Worker" }
-
-format = { depends = ["format:api", "format:web", "format:worker"], description = "Format all apps" }
-"format:api" = { dir = "apps/api", run = "uv run poe format", description = "Format API" }
-"format:web" = { dir = "apps/web", run = "pnpm format", description = "Format Web" }
-"format:worker" = { dir = "apps/worker", run = "uv run poe format", description = "Format Worker" }
-
-test = { depends = ["test:api", "test:web", "test:worker"], description = "Test all apps" }
-"test:api" = { dir = "apps/api", run = "uv run poe test", description = "Test API" }
-"test:web" = { dir = "apps/web", run = "pnpm test", description = "Test Web" }
-"test:worker" = { dir = "apps/worker", run = "uv run poe test", description = "Test Worker" }
-
-typecheck = { depends = ["typecheck:api", "typecheck:web"], description = "Type check all apps" }
-"typecheck:api" = { dir = "apps/api", run = "uv run poe type-check", description = "Type check API" }
-"typecheck:web" = { dir = "apps/web", run = "pnpm typecheck", description = "Type check Web" }
-
-"gen:api" = { dir = "apps/web", run = "pnpm gen:api", description = "Generate API client" }
-
-"migrate" = { dir = "apps/api", run = "uv run poe migrate", description = "Run DB migrations" }
-"migrate:create" = { dir = "apps/api", run = "uv run poe migrate-create", description = "Create migration" }
-
-"infra:up" = { dir = "apps/api", run = "docker compose -f docker-compose.infra.yml up -d", description = "Start local infra" }
-"infra:down" = { dir = "apps/api", run = "docker compose -f docker-compose.infra.yml down", description = "Stop local infra" }
+dev = { depends = ["//apps/api:dev", "//apps/web:dev", "//apps/worker:dev"], description = "Start all services" }
+lint = { depends = ["//apps/api:lint", "//apps/web:lint", "//apps/worker:lint"], description = "Lint all apps" }
+format = { depends = ["//apps/api:format", "//apps/web:format", "//apps/worker:format"], description = "Format all apps" }
+test = { depends = ["//apps/api:test", "//apps/web:test", "//apps/worker:test"], description = "Test all apps" }
+typecheck = { depends = ["//apps/api:typecheck", "//apps/web:typecheck"], description = "Type check all apps" }
+"i18n:build" = { depends = ["//packages/i18n:build"], description = "Build i18n files" }
 
 [tasks."git:commit-msg"]
 description = "Validate commit message using commitlint"
@@ -55,11 +32,11 @@ changed=$(git diff --cached --name-only)
 
 if echo "$changed" | grep -q "^apps/api/"; then
     echo "[pre-commit] apps/api detected, running lint..."
-    (cd apps/api && uv run poe lint) || exit 1
+    mise //apps/api:lint || exit 1
 fi
 
 if echo "$changed" | grep -q "^apps/web/"; then
     echo "[pre-commit] apps/web detected, running lint..."
-    (cd apps/web && pnpm lint) || exit 1
+    mise //apps/web:lint || exit 1
 fi
 '''

@@ -9,11 +9,12 @@ Production-ready fullstack monorepo template with Next.js 16, FastAPI, Flutter, 
 - **Modern Stack**: Next.js 16 + React 19, FastAPI, Flutter 3.32, TailwindCSS v4
 - **Type Safety**: Full type support with TypeScript, Pydantic, and Dart
 - **Authentication**: OAuth with better-auth (Google, GitHub, Kakao)
-- **Internationalization**: next-intl (web), Flutter ARB (mobile)
+- **Internationalization**: next-intl (web), Flutter ARB (mobile), shared i18n package
 - **Auto-generated API Clients**: Orval (web), swagger_parser (mobile)
 - **Infrastructure as Code**: Terraform + GCP (Cloud Run, Cloud SQL, Cloud Storage)
 - **CI/CD**: GitHub Actions + Workload Identity Federation (keyless deployment)
 - **AI Agent Support**: Guidelines for AI coding agents (Gemini, Claude, etc.)
+- **mise Monorepo**: mise-based task management and unified tool versions
 
 ## Tech Stack
 
@@ -25,6 +26,7 @@ Production-ready fullstack monorepo template with Next.js 16, FastAPI, Flutter, 
 | **Worker** | FastAPI + CloudTasks/PubSub |
 | **Infrastructure** | Terraform, GCP (Cloud Run, Cloud SQL, Cloud Storage, CDN) |
 | **CI/CD** | GitHub Actions, Workload Identity Federation |
+| **Tool Management** | mise (unified Node, Python, Flutter, Terraform versions) |
 
 ## Prerequisites
 
@@ -40,7 +42,7 @@ Production-ready fullstack monorepo template with Next.js 16, FastAPI, Flutter, 
 # Install mise (if not installed)
 curl https://mise.run | sh
 
-# Install all runtimes (Node 24, Python 3.13, Flutter 3.32, pnpm 10, uv)
+# Install all runtimes (Node 24, Python 3.13, Flutter 3, pnpm 10, uv, Terraform)
 mise install
 ```
 
@@ -63,7 +65,7 @@ cd apps/mobile && flutter pub get
 ### 3. Start Local Infrastructure
 
 ```bash
-mise run infra:up
+mise //apps/api:infra:up
 ```
 
 This starts:
@@ -74,19 +76,19 @@ This starts:
 ### 4. Run Database Migrations
 
 ```bash
-mise run migrate
+mise //apps/api:migrate
 ```
 
 ### 5. Start Development Servers
 
 ```bash
 # Start all services (recommended)
-mise run dev
+mise dev
 
 # Or start individually
-mise run dev:api    # API server
-mise run dev:web    # Web server
-mise run dev:worker # Worker
+mise //apps/api:dev    # API server
+mise //apps/web:dev    # Web server
+mise //apps/worker:dev # Worker
 ```
 
 ## Project Structure
@@ -99,7 +101,8 @@ fullstack-starter/
 │   ├── worker/        # Background worker
 │   ├── mobile/        # Flutter mobile app
 │   └── infra/         # Terraform infrastructure
-├── packages/          # Shared packages
+├── packages/
+│   └── i18n/          # Shared i18n package (Source of Truth)
 ├── .agent/rules/      # AI agent guidelines
 ├── .serena/           # Serena MCP config
 └── .github/workflows/ # CI/CD
@@ -107,33 +110,39 @@ fullstack-starter/
 
 ## Commands
 
-### mise Tasks (Recommended)
+### mise Monorepo Tasks
+
+This project uses mise monorepo mode with `//path:task` syntax.
+
+```bash
+# List all available tasks
+mise tasks --all
+```
 
 | Command | Description |
 |---------|-------------|
-| `mise run dev` | Start all services |
-| `mise run lint` | Lint all apps |
-| `mise run format` | Format all apps |
-| `mise run test` | Test all apps |
-| `mise run typecheck` | Type check |
-| `mise run infra:up` | Start local infrastructure |
-| `mise run infra:down` | Stop local infrastructure |
-| `mise run migrate` | Run DB migrations |
-| `mise run gen:api` | Generate API client |
+| `mise dev` | Start all services |
+| `mise lint` | Lint all apps |
+| `mise format` | Format all apps |
+| `mise test` | Test all apps |
+| `mise typecheck` | Type check |
+| `mise i18n:build` | Build i18n files |
 
-### App-specific Commands
+### App-specific Tasks
 
 <details>
 <summary>API (apps/api)</summary>
 
 | Command | Description |
 |---------|-------------|
-| `poe dev` | Start development server |
-| `poe test` | Run tests |
-| `poe lint` | Run linter |
-| `poe format` | Format code |
-| `poe migrate` | Run migrations |
-| `poe migrate-create "desc"` | Create new migration |
+| `mise //apps/api:dev` | Start development server |
+| `mise //apps/api:test` | Run tests |
+| `mise //apps/api:lint` | Run linter |
+| `mise //apps/api:format` | Format code |
+| `mise //apps/api:migrate` | Run migrations |
+| `mise //apps/api:migrate:create` | Create new migration |
+| `mise //apps/api:infra:up` | Start local infrastructure |
+| `mise //apps/api:infra:down` | Stop local infrastructure |
 
 </details>
 
@@ -142,12 +151,11 @@ fullstack-starter/
 
 | Command | Description |
 |---------|-------------|
-| `pnpm dev` | Start development server |
-| `pnpm build` | Production build |
-| `pnpm start` | Start production server |
-| `pnpm test` | Run tests |
-| `pnpm lint` | Run linter |
-| `pnpm gen:api` | Generate API client from OpenAPI |
+| `mise //apps/web:dev` | Start development server |
+| `mise //apps/web:build` | Production build |
+| `mise //apps/web:test` | Run tests |
+| `mise //apps/web:lint` | Run linter |
+| `mise //apps/web:gen:api` | Generate API client |
 
 </details>
 
@@ -156,11 +164,22 @@ fullstack-starter/
 
 | Command | Description |
 |---------|-------------|
-| `flutter run` | Run on device/simulator |
-| `flutter test` | Run tests |
-| `flutter analyze` | Run analyzer |
-| `flutter build apk` | Build Android APK |
-| `flutter build ios` | Build iOS |
+| `mise //apps/mobile:dev` | Run on device/simulator |
+| `mise //apps/mobile:build` | Build |
+| `mise //apps/mobile:test` | Run tests |
+| `mise //apps/mobile:lint` | Run analyzer |
+| `mise //apps/mobile:gen:l10n` | Generate localizations |
+
+</details>
+
+<details>
+<summary>Worker (apps/worker)</summary>
+
+| Command | Description |
+|---------|-------------|
+| `mise //apps/worker:dev` | Start worker |
+| `mise //apps/worker:test` | Run tests |
+| `mise //apps/worker:lint` | Run linter |
 
 </details>
 
@@ -169,10 +188,41 @@ fullstack-starter/
 
 | Command | Description |
 |---------|-------------|
-| `pnpm plan` | Preview Terraform changes |
-| `pnpm apply` | Apply Terraform changes |
+| `mise //apps/infra:init` | Initialize Terraform |
+| `mise //apps/infra:plan` | Preview changes |
+| `mise //apps/infra:apply` | Apply changes |
+| `mise //apps/infra:plan:prod` | Preview production |
+| `mise //apps/infra:apply:prod` | Apply production |
 
 </details>
+
+<details>
+<summary>i18n (packages/i18n)</summary>
+
+| Command | Description |
+|---------|-------------|
+| `mise //packages/i18n:build` | Build i18n files for web and mobile |
+| `mise //packages/i18n:build:web` | Build for web only |
+| `mise //packages/i18n:build:mobile` | Build for mobile only |
+
+</details>
+
+## Internationalization (i18n)
+
+`packages/i18n` is the Single Source of Truth for i18n resources.
+
+```bash
+# Edit i18n files
+packages/i18n/source/en.arb  # English (default)
+packages/i18n/source/ko.arb  # Korean
+packages/i18n/source/ja.arb  # Japanese
+
+# Build and deploy to each app
+mise i18n:build
+# Generated files:
+# - apps/web/messages/*.json (Nested JSON)
+# - apps/mobile/lib/l10n/app_*.arb (Flutter ARB)
+```
 
 ## Configuration
 
